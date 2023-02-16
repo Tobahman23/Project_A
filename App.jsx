@@ -5,11 +5,19 @@
  * @format
  */
 
+
+//imports
 import React, {useState} from 'react';
 import {PropsWithChildren, useEffect} from 'react';
 import { getWeather, dailyForecast, showWeather, getLocation } from 'react-native-weather-api';
 import {NavigationContainer, StackActions} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import Pdf from 'react-native-pdf';
+import PDFHtml from './components/htmlcheat';
+import PDFCss from './components/csscheat';
+import PDFJs from './components/jscheat';
+import PDFReact from './components/reactcheat';
+import { SelectList } from 'react-native-dropdown-select-list';
 import {
   SafeAreaView,
   ScrollView,
@@ -24,8 +32,9 @@ import {
   Button,
   KeyboardAvoidingView,
   TextInput,
+  Keyboard,
+  Linking,
 } from 'react-native';
-
 import {
   Colors,
   DebugInstructions,
@@ -33,18 +42,22 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import Task from './components/Task';
+import NumericInput from 'react-native-numeric-input';
 
-import Task from './components/Task'
 
+
+
+
+
+
+//Creating stacknavigator
 const Stack = createNativeStackNavigator();
 
 
 
 
-
-
-
-//Home screen/Navigation
+//Homescreen for user navigation
 const HomeScreen = ({navigation}) => {
   return (
     <ScrollView>
@@ -84,19 +97,21 @@ const HomeScreen = ({navigation}) => {
 
 
 
-//Weather app
+
+
+
+
+
+
+//Weather application for showcasing the weather for your current location
 const WeatherScreen = ({navigation}) => {
 
   const [isLoading, setLoading] = useState(true);
   const [response, setResponse] = useState([]);
 
 
-let temp;
-let wind;
-
 useEffect(() => {
   getLocation().then((location) => {
-    console.log(location);
   getWeather({
   
     key: "0bde7f26fbe2034dd8c0c14c861f005c",
@@ -107,20 +122,32 @@ useEffect(() => {
   }).then(() => {
   
     let data = new showWeather();
-    console.log(data);
-    temp = data.temp;
-    wind = data.wind;
-    console.log(temp);
     setResponse(data);
     setLoading(false);
+    return response;
   });
   });
 }, []);
-  return (
-  <View>
-     <Text>{response.weather}</Text>
-  </View>
+if (isLoading === false)
+{
+return(
+<ScrollView>
+<Text style={styles.cityName}>{response.name}</Text>
+<View style={styles.weatherWrap}>
+<Text style={styles.weatherText}>Temperature: {Math.round(response.temp)} ºC</Text>
+<Text style={styles.weatherText}>Min: {Math.round(response.temp_min)} ºC</Text>
+<Text style={styles.weatherText}>Max: {Math.round(response.temp_max)} ºC</Text>
+<Text style={styles.weatherText}>Wind: {response.wind} m/s</Text>
+<Text style={styles.weatherText}>Humidity: {response.humidity} %</Text>
+</View>
+</ScrollView>
 )
+}
+else {
+  return(
+    <Text style={styles.weatherText}>Loading. . .</Text>
+  )
+}
 }
 
 
@@ -128,7 +155,13 @@ useEffect(() => {
 
 
 
-//Dice
+
+
+
+
+
+
+//Dice application (Switches between two screens/navigations)
 const DicetwoScreen = ({navigation}) => {
     var dice = Math.floor(Math.random() * (6 - 1 + 1) + 1);
     if (dice == 1) 
@@ -211,20 +244,42 @@ const DiceScreen = ({navigation}) => {
 
 
 
+
+
+
+
+
+
+//To-do list, create tasks or delete them
 const TodoScreen = ({navigation}) => {
   const [task, setTask] = useState();
   const [taskItems, setTaskItems] = useState([]);
 
 
   const handleAddTask = () => {
-    console.log(task);
+    Keyboard.dismiss();
+    setTaskItems([...taskItems, task])
+    setTask(null);
+  }
+  const completeTask = (index) => {
+    let itemsCopy = [...taskItems];
+    itemsCopy.splice(index, 1);
+    setTaskItems(itemsCopy);
   }
   return(
     <View>
     <View style={styles.taskwrap}>
     <Text style={styles.tasktitle}>To do list</Text>
     <View style={styles.items}>
-    <Task text={'task 1'}/>
+    {
+      taskItems.map((item, index) => {
+        return( 
+        <TouchableOpacity key={index} onPress={() => completeTask(index)}>
+        <Task text={item} />
+        </TouchableOpacity>
+        )
+      }) 
+    }
     </View>
     </View>
 
@@ -252,23 +307,182 @@ const TodoScreen = ({navigation}) => {
 
 
 
-
+//NewsScreen, shows the most relevant out of the latest news
 const NewsScreen = ({navigation}) => {
+  const [data, setData] = useState([]);
+  const link = 'https://newsapi.org/v2/top-headlines?country=se&apiKey=7a2b63703238404b9bd96257276546e1';
+  
+  useEffect(() => {
+  const getNews = () =>{
+    return fetch(link).then(response => response.json())
+    .then(json => {
+      setData(json.articles);
+      return data;
+    })
+  }
+ getNews();
+}, []);
   return(
-    <Text>Yeee</Text>
+    <ScrollView>
+    {
+      data.map((item, index) => {
+        return (
+        <View style={styles.articleWrapper}>
+        <Text style={styles.articleTitle}>{item.title}</Text>
+        <Text style={styles.articleDesc}>{item.description}</Text>
+        <Image style={styles.articleImage} source={{uri: `${item.urlToImage}`}}/>
+        <Text style={styles.articleOther}>{item.source.name}</Text>
+        <Text style={styles.articleOther}>{item.author}</Text>
+        <Text style={styles.articleLink} onPress={() => Linking.openURL(`${item.url}`)}>{item.url}</Text>
+        </View>
+        )
+      })
+    }
+    </ScrollView>
   )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 const CurrencyScreen = ({navigation}) => {
+
+  const [data, setData] = useState([]);
+  const [selected, setSelected] = useState("");
+  const [currency, setCurrency] = useState();
+  const [valueTo, setValueTo] = useState();
+  const [amount, setAmount] = useState();
+  const [exchange, setExchange] = useState();
+  const [cur, setCur] = useState();
+  const [tempAmount, setTempAmount] = useState();
+  const coolData = [
+
+  ];
+  handleCurrency = () =>{
+    
+      const getAmount = () => {
+        return fetch(`https://api.exchangerate.host/convert?from=${currency}&to=${valueTo}`
+    ).then(response => response.json())
+        .then(json => {
+        setExchange(json.result);
+        return exchange;
+        })
+      }
+      getAmount();
+      console.log(exchange);
+      console.log(exchange*amount);
+      setCur(exchange*amount);
+      setTempAmount(amount);
+  }
+  useEffect(() =>{
+  const getExchange = () => {
+    return fetch(`https://api.exchangerate.host/latest`
+).then(response => response.json())
+    .then(json => {
+    console.log(json);
+    setData(json.rates);
+    return data;
+    })
+  }
+  getExchange();
+  }, []);
+  const cool = Object.entries(data);
+  cool.map((item, index) => {
+    item.pop();
+    coolData.push(item);
+    })
   return(
-    <Text>Yooo</Text>
+    <ScrollView>
+    <Text style={styles.curText}>What currency do you want to convert from?</Text>
+    <SelectList 
+    data={coolData}
+    setSelected={setSelected}
+    onSelect={() => setCurrency(selected)}
+    />  
+    <View style={styles.amountView}>
+    <Text style={styles.curText}>Amount to convert:</Text>
+    <NumericInput onChange={value => setAmount(value)}/>
+    </View>
+    <Text style={styles.curText}>What currency do you want to convert to?</Text>
+    <SelectList 
+    data={coolData}
+    setSelected={setSelected}
+    onSelect={() => setValueTo(selected)}
+    />  
+    <TouchableOpacity style={styles.currencyButton} onPress={() => handleCurrency()}><Text style={styles.currencyText}>Convert</Text></TouchableOpacity>
+    <Text style={styles.result} >{tempAmount} {currency} = {cur} {valueTo}</Text>
+    </ScrollView>
   )
 }
+
+
+
+
+
+//Cheatsheet navigation to different pdfs 
 const CheatScreen = ({navigation}) => {
   return(
-    <Text>Chirp</Text>
+    <View style={styles.navWrap}>
+    <TouchableOpacity
+    style= {styles.cheatContainer}
+    onPress= {() => navigation.navigate('Html')}><View style={styles.wrap}><Text style={styles.squareText}>Html5</Text></View>
+    </TouchableOpacity>
+    <TouchableOpacity
+    style= {styles.cheatContainer}
+    onPress= {() => navigation.navigate('Css')}><View style={styles.wrap}><Text style={styles.squareText}>Css</Text></View>
+    </TouchableOpacity>
+    <TouchableOpacity
+    style= {styles.cheatContainer}
+    onPress= {() => navigation.navigate('Javascript')}><View style={styles.wrap}><Text style={styles.squareText}>Javascript</Text></View>
+    </TouchableOpacity>
+    <TouchableOpacity
+    style= {styles.cheatContainer}
+    onPress= {() => navigation.navigate('React')}><View style={styles.wrap}><Text style={styles.squareText}>React</Text></View>
+    </TouchableOpacity>
+    </View>
   )
 }
 
+const HtmlCheatScreen = ({navigation}) =>{
+  return(
+    <PDFHtml/>
+  )
+}
+
+const CssCheatScreen = ({navigation}) =>{
+  return(
+    <PDFCss/>
+  )
+}
+
+const JavascriptCheatScreen = ({navigation}) =>{
+  return(
+    <PDFJs/>
+  )
+}
+
+const ReactCheatScreen = ({navigation}) =>{
+  return(
+    <PDFReact/>
+  )
+}
+
+
+
+
+
+
+
+//Main function creates the different navigations and direct the user to Home automatically
 function App(): JSX.Element {
   return (
     <NavigationContainer>
@@ -281,11 +495,27 @@ function App(): JSX.Element {
     <Stack.Screen name="News" component={NewsScreen} options={{title: 'News'}}/>
     <Stack.Screen name="Cconverter" component={CurrencyScreen} options={{title:'Currency Converter'}}/>
     <Stack.Screen name="Cheats" component={CheatScreen} options={{title: 'Cheat Sheet'}}/>
+    <Stack.Screen name="Html" component={HtmlCheatScreen} options={{title: 'Html Cheat Sheet'}}/>
+    <Stack.Screen name="Css" component={CssCheatScreen} options={{title: 'Css Cheat Sheet'}}/>
+    <Stack.Screen name="Javascript" component={JavascriptCheatScreen} options={{title: 'Js Cheat Sheet'}}/>
+    <Stack.Screen name="React" component={ReactCheatScreen} options={{title: 'React Cheat Sheet'}}/>
     </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
+
+
+
+
+
+
+
+
+
+
+
+//Stylesheet with variables for different components
 const styles = StyleSheet.create({
   squareContainer: {
     marginLeft: 20,
@@ -383,7 +613,116 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
     },
-    addText:{},
+    weatherText:{
+      fontSize: 20,
+      fontWeight: '400',
+      marginTop:10,
+      fontFamily: 'AvenirNext-Italic',
+    },
+    weatherWrap:{
+      flexDirection: 'column',
+      paddingHorizontal: 20,
+      justifyContent: 'center',
+      borderColor: 'black',
+      borderWidth: 2,
+      marginVertical: 10,
+      paddingVertical: 20,
+      marginHorizontal: 20,
+    },
+    cityName:{
+      fontSize: 25,
+      fontWeight: '600',
+      fontFamily: 'AvenirNext-Italic',
+      textAlign: 'center',
+      textDecorationLine: 'underline',
+      marginTop: 150,
+    },
+    articleWrapper:{
+      paddingHorizontal: 20,
+      paddingVertical:30,
+      flexDirection: 'column',
+      borderTopColor: 'gray',
+      borderTopWidth: 2,
+      marginBottom:20,
+    },
+    articleImage:{
+      width: 350,
+      height: 300,
+    },
+    articleTitle:{
+      fontSize: 30,
+      fontWeight: 'bold',
+    },
+    articleDesc:{
+      fontSize:15,
+      fontWeight: 400,
+    },
+    navWrap:{
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'black',
+    },
+    cheatContainer: {
+      marginLeft: 20,
+      marginTop: 10,
+      width: 100,
+      height: 100,
+      backgroundColor: 'black',
+      borderColor: 'white',
+      borderWidth: 0.2,
+      borderRadius: 30,
+    },
+    articleLink: {
+      marginTop:10,
+      color: 'blue',
+      textDecorationLine: 'underline',
+    },
+    selector: {
+    },
+    curText: {
+      color: 'black',
+      fontSize: 18,
+      textAlign: 'center',
+      marginVertical: 20,
+      textShadowColor: 'black',
+      textShadowRadius: 1,
+    },
+    curInput:{
+      width: '100%',
+      fontSize: 18,
+      color:'black',
+      fontWeight: '500',
+    },
+    amountView:{
+      alignItems: 'center',
+      marginVertical: 40,
+    },
+    currencyButton:{
+      marginVertical: 20,
+      marginHorizontal: 20,
+      width:'90%',
+      height:'8%',
+      backgroundColor:'black',
+      borderRadius: 12,
+      justifyContent:'center',
+      alignItems:'center',
+    },
+    currencyText:{
+      color:'white',
+      fontSize:20,
+      textAlign:'center',
+    },
+    result:{
+      borderColor:'black',
+      borderWidth:2,
+      textAlign:'center',
+      marginHorizontal:20,
+      fontSize:25,
+      fontFamily:'AvenirNext-Italic',
+      borderRadius:10,
+    }
 });
 
 export default App;
