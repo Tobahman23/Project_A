@@ -44,6 +44,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import Task from './components/Task';
 import NumericInput from 'react-native-numeric-input';
+import { set } from 'react-native-reanimated';
 
 
 
@@ -109,7 +110,6 @@ const WeatherScreen = ({navigation}) => {
   const [isLoading, setLoading] = useState(true);
   const [response, setResponse] = useState([]);
 
-
 useEffect(() => {
   getLocation().then((location) => {
   getWeather({
@@ -130,8 +130,9 @@ useEffect(() => {
 }, []);
 if (isLoading === false)
 {
+
 return(
-<ScrollView>
+<View style={styles.scrollWrapper}>
 <Text style={styles.cityName}>{response.name}</Text>
 <View style={styles.weatherWrap}>
 <Text style={styles.weatherText}>Temperature: {Math.round(response.temp)} ºC</Text>
@@ -140,7 +141,8 @@ return(
 <Text style={styles.weatherText}>Wind: {response.wind} m/s</Text>
 <Text style={styles.weatherText}>Humidity: {response.humidity} %</Text>
 </View>
-</ScrollView>
+<Image style={styles.weatherImage} source={{uri: `${response.icon}`}}/>
+</View>
 )
 }
 else {
@@ -231,10 +233,51 @@ const DicetwoScreen = ({navigation}) => {
     }
 }
 const DiceScreen = ({navigation}) => {
-  var dice = Math.floor(Math.random() * (6 - 1 + 1) + 1);
+  const [dce, setDice] = useState();
+  const diceRoll = () => {
+    var dice = Math.floor(Math.random() * (6 - 1 + 1) + 1);
+    if (dice == 1) 
+    {
+      setDice('./images/one.png');
+      return dce;
+    }
+    else if (dice == 2)
+    {
+      setDice('./images/two.png');
+      return dce;
+    }
+    else if (dice == 3)
+   {
+    setDice('./images/three.png');
+    return dce;
+    }
+    else if (dice == 4)
+    {
+      setDice('./images/four.png');
+      return dce;
+    }
+    else if (dice == 5)
+    {
+      setDice('./images/five.png');
+      return dce;
+    }
+    else {
+      setDice('./images/six.png');
+      return dce;
+    }
+  }
+  console.log(image);
+  if (dce){
+  image = dce;
+  console.log(dce);
+  }
   return(
-      <View>
-     <TouchableOpacity style={styles.dicebtn} onPress= {() => navigation.navigate('Dicetwo')}><View style={styles.wrap}><Text style={styles.diceText}>Roll</Text></View></TouchableOpacity>
+      <View onPress={() => console.log("sup")}>
+      {
+        image
+      }
+     <Image source={`${image}`} style={styles.diceimage}/>
+     <TouchableOpacity style={styles.currencyButton} onPress={() => diceRoll()}><Text style={styles.currencyText}>Roll</Text></TouchableOpacity>
      </View>
   )
 }
@@ -621,13 +664,14 @@ const styles = StyleSheet.create({
     },
     weatherWrap:{
       flexDirection: 'column',
-      paddingHorizontal: 20,
+      paddingHorizontal: 50,
       justifyContent: 'center',
       borderColor: 'black',
-      borderWidth: 2,
-      marginVertical: 10,
+      borderWidth: 3,
+      marginVertical: 20,
       paddingVertical: 20,
-      marginHorizontal: 20,
+      marginHorizontal: 10,
+      borderRadius:10,
     },
     cityName:{
       fontSize: 25,
@@ -722,7 +766,18 @@ const styles = StyleSheet.create({
       fontSize:25,
       fontFamily:'AvenirNext-Italic',
       borderRadius:10,
-    }
+    },
+    weatherImage:{
+      width: 100,
+      height: 100,
+      borderColor: 'black',
+      borderWidth: 2,
+      borderRadius: 50,
+    },
+    scrollWrapper:{
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
 });
 
 export default App;
