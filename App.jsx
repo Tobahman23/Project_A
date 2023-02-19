@@ -60,8 +60,15 @@ const Stack = createNativeStackNavigator();
 
 //Homescreen for user navigation
 const HomeScreen = ({navigation}) => {
+  const [time, setTime] = useState();
   var options = {weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false};
-  var date = new Date().toLocaleTimeString('en-us', options);
+  useEffect(() => {
+    const interval = setInterval(() => setTime(new Date().toLocaleTimeString('en-us', options)), 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
   return (
     <ScrollView>
     <View style= {styles.flexing}>
@@ -93,7 +100,7 @@ const HomeScreen = ({navigation}) => {
     </TouchableOpacity>
     </View>
     <View style= {styles.dateAndTime}>
-    <Text>{date}</Text>
+    <Text style={styles.date}>{time}</Text>
     </View>
     </ScrollView>
   )
@@ -445,7 +452,7 @@ const CurrencyScreen = ({navigation}) => {
     coolData.push(item);
     })
   return(
-    <ScrollView>
+    <View>
     <Text style={styles.curText}>What currency do you want to convert from?</Text>
     <SelectList 
     data={coolData}
@@ -464,7 +471,7 @@ const CurrencyScreen = ({navigation}) => {
     />  
     <TouchableOpacity style={styles.currencyButton} onPress={() => handleCurrency()}><Text style={styles.currencyText}>Convert</Text></TouchableOpacity>
     <Text style={styles.result} >{tempAmount} {currency} = {cur} {valueTo}</Text>
-    </ScrollView>
+    </View>
   )
 }
 
@@ -527,7 +534,7 @@ const ReactCheatScreen = ({navigation}) =>{
 
 
 //Main function creates the different navigations and direct the user to Home automatically
-function App(): JSX.Element {
+function App(){
   return (
     <NavigationContainer>
     <Stack.Navigator>
@@ -566,8 +573,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     width: 100,
     height: 100,
-    backgroundColor: 'purple',
-    borderRadius: 30,
+    backgroundColor: 'rgb(121, 181, 0)',
+    borderRadius: 20,
+    borderColor: 'black',
+    borderWidth: 1,
   },
   squareText: {
     color: 'white',
@@ -711,7 +720,6 @@ const styles = StyleSheet.create({
       backgroundColor: 'black',
     },
     cheatContainer: {
-      marginLeft: 20,
       marginTop: 10,
       width: 100,
       height: 100,
@@ -768,6 +776,8 @@ const styles = StyleSheet.create({
       fontSize:25,
       fontFamily:'AvenirNext-Italic',
       borderRadius:10,
+      borderBottomColor: 'black',
+      borderBottomWidth: 2,
     },
     weatherImage:{
       width: 100,
@@ -780,6 +790,21 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
     },
+    dateAndTime:{
+      marginHorizontal:20,
+      marginVertical:'30%',
+      justifyContent:'center',
+      alignItems:'center',
+    },
+    date:{
+      fontSize: 30,
+      fontFamily:'AvenirNext-Italic',
+      fontWeight: '200',
+      borderColor:'black',
+      borderWidth: 0.5,
+      padding:20,
+      borderRadius:30,
+    }
 });
 
 export default App;
