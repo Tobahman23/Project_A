@@ -473,7 +473,6 @@ function App(){
     <Stack.Screen name="Home" component = {HomeScreen} options={{title: 'Home'}}/>
     <Stack.Screen name="Weather" component = {WeatherScreen} options={{title: 'Weather'}}/>
     <Stack.Screen name="Dice" component={DiceScreen} options={{title: 'Dice'}}/>
-    <Stack.Screen name="Dicetwo" component={DicetwoScreen} options={{title: 'Dice'}}/>
     <Stack.Screen name="To-Do" component={TodoScreen} options={{title: 'To-do list'}}/>
     <Stack.Screen name="News" component={NewsScreen} options={{title: 'News'}}/>
     <Stack.Screen name="Cconverter" component={CurrencyScreen} options={{title:'Currency Converter'}}/>
