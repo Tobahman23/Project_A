@@ -175,75 +175,7 @@ else {
 
 
 
-//Dice application (Switches between two screens/navigations)
-const DicetwoScreen = ({navigation}) => {
-    var dice = Math.floor(Math.random() * (6 - 1 + 1) + 1);
-    if (dice == 1) 
-    {
-      return(
-        <View style={styles.wrap}>
-        <Image
-        source={require('./images/one.png')}
-        style={styles.diceimage}
-        />
-        </View>
-      )
-    }
-    else if (dice == 2)
-    {
-      return(
-        <View style={styles.wrap}>
-        <Image
-        source={require('./images/two.png')}
-        style={styles.diceimage}
-        />
-        </View>
-      )
-    }
-    else if (dice == 3)
-   {
-    return(
-      <View style={styles.wrap}>
-      <Image
-      source={require('./images/three.png')}
-      style={styles.diceimage}
-      />
-      </View>
-    )
-    }
-    else if (dice == 4)
-    {
-      return(
-        <View style={styles.wrap}>
-        <Image
-        source={require('./images/four.png')}
-        style={styles.diceimage}
-        />
-        </View>
-      )
-    }
-    else if (dice == 5)
-    {
-      return(
-        <View style={styles.wrap}>
-        <Image
-        source={require('./images/five.png')}
-        style={styles.diceimage}
-        />
-        </View>
-      )
-    }
-    else {
-      return(
-        <View style={styles.wrap}>
-        <Image
-        source={require('./images/six.png')}
-        style={styles.diceimage}
-        />
-        </View>
-      )
-    }
-}
+
 const DiceScreen = ({navigation}) => {
   const [dce, setDice] = useState();
   const diceRoll = () => {
