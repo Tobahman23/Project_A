@@ -313,7 +313,7 @@ const NewsScreen = ({navigation}) => {
     {
       data.map((item, index) => {
         return (
-        <View style={styles.articleWrapper}>
+        <View key={index} style={styles.articleWrapper}>
         <Text style={styles.articleTitle}>{item.title}</Text>
         <Text style={styles.articleDesc}>{item.description}</Text>
         <Image style={styles.articleImage} source={{uri: `${item.urlToImage}`}}/>
