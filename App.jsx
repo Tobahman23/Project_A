@@ -17,6 +17,7 @@ import PDFHtml from './components/htmlcheat';
 import PDFCss from './components/csscheat';
 import PDFJs from './components/jscheat';
 import PDFReact from './components/reactcheat';
+import LinearGradient from 'react-native-linear-gradient';
 import { SelectList } from 'react-native-dropdown-select-list';
 import {
   SafeAreaView,
@@ -74,33 +75,35 @@ const HomeScreen = ({navigation}) => {
     <View style= {styles.flexing}>
     <TouchableOpacity
     style= {styles.squareContainer}
-    onPress= {() => navigation.navigate('Weather')}><View style={styles.wrap}><Text style={styles.squareText}>Weather</Text></View>
+    onPress= {() => navigation.navigate('Weather')}><View style={styles.wrap}><LinearGradient colors={['rgb(15, 75, 0)', 'rgb(30, 100, 0)', 'rgb(15, 75, 0)']} style={styles.linearGradient}><Text style={styles.squareText}>Weather</Text></LinearGradient></View>
     </TouchableOpacity>
     <TouchableOpacity
     style= {styles.squareContainer}
-    onPress= {() => navigation.navigate('Dice')}><View style={styles.wrap}><Text style={styles.squareText}>Dice</Text></View>
+    onPress= {() => navigation.navigate('Dice')}><View style={styles.wrap}><LinearGradient colors={['rgb(15, 75, 0)', 'rgb(30, 100, 0)', 'rgb(15, 75, 0)']} style={styles.linearGradient}><Text style={styles.squareText}>Dice</Text></LinearGradient></View>
     </TouchableOpacity>
     <TouchableOpacity
     style= {styles.squareContainer}
-    onPress= {() => navigation.navigate('To-Do')}><View style={styles.wrap}><Text style={styles.squareText}>To-do</Text></View>
+    onPress= {() => navigation.navigate('To-Do')}><View style={styles.wrap}><LinearGradient colors={['rgb(15, 75, 0)', 'rgb(30, 100, 0)', 'rgb(15, 75, 0)']} style={styles.linearGradient}><Text style={styles.squareText}>To-do</Text></LinearGradient></View>
     </TouchableOpacity>
     </View>
     <View style= {styles.flexing}>
     <TouchableOpacity
     style= {styles.squareContainer}
-    onPress= {() => navigation.navigate('News')}><View style={styles.wrap}><Text style={styles.squareText}>News</Text></View>
+    onPress= {() => navigation.navigate('News')}><View style={styles.wrap}><LinearGradient colors={['rgb(15, 75, 0)', 'rgb(30, 100, 0)', 'rgb(15, 75, 0)']} style={styles.linearGradient}><Text style={styles.squareText}>News</Text></LinearGradient></View>
     </TouchableOpacity>
     <TouchableOpacity
     style= {styles.squareContainer}
-    onPress= {() => navigation.navigate('Cconverter')}><View style={styles.wrap}><Text style={styles.squareText}>Currency Converter</Text></View>
+    onPress= {() => navigation.navigate('Cconverter')}><View style={styles.wrap}><LinearGradient colors={['rgb(15, 75, 0)', 'rgb(30, 100, 0)', 'rgb(15, 75, 0)']} style={styles.linearGradient}><Text style={styles.squareText}>Currency Converter</Text></LinearGradient></View>
     </TouchableOpacity>
     <TouchableOpacity
     style= {styles.squareContainer}
-    onPress= {() => navigation.navigate('Cheats')}><View style={styles.wrap}><Text style={styles.squareText}>Cheat Sheet</Text></View>
+    onPress= {() => navigation.navigate('Cheats')}><View style={styles.wrap}><LinearGradient colors={['rgb(15, 75, 0)', 'rgb(30, 100, 0)', 'rgb(15, 75, 0)']} style={styles.linearGradient}><Text style={styles.squareText}>Cheat Sheet</Text></LinearGradient></View>
     </TouchableOpacity>
     </View>
     <View style= {styles.dateAndTime}>
+    <LinearGradient colors={['rgb(15, 75, 0)', 'rgb(30, 120, 0)', 'rgb(15, 75, 0)']} style={styles.otherGradient}>
     <Text style={styles.date}>{time}</Text>
+    </LinearGradient>
     </View>
     </ScrollView>
   )
@@ -347,7 +350,6 @@ const CurrencyScreen = ({navigation}) => {
   const [currency, setCurrency] = useState();
   const [valueTo, setValueTo] = useState();
   const [amount, setAmount] = useState();
-  const [exchange, setExchange] = useState();
   const [cur, setCur] = useState();
   const [tempAmount, setTempAmount] = useState();
   const coolData = [
@@ -359,12 +361,11 @@ const CurrencyScreen = ({navigation}) => {
         return fetch(`https://api.exchangerate.host/convert?from=${currency}&to=${valueTo}`
     ).then(response => response.json())
         .then(json => {
-        setExchange(json.result);
-        return exchange;
+        setCur(json.result * amount);
+        return cur;
         })
       }
       getAmount();
-      setCur(exchange*amount);
       setTempAmount(amount);
   }
   useEffect(() =>{
@@ -402,7 +403,7 @@ const CurrencyScreen = ({navigation}) => {
     onSelect={() => setValueTo(selected)}
     />  
     <TouchableOpacity style={styles.currencyButton} onPress={() => handleCurrency()}><Text style={styles.currencyText}>Convert</Text></TouchableOpacity>
-    <Text style={styles.result} >{tempAmount} {currency} = {cur} {valueTo}</Text>
+    <Text style={styles.result} >{tempAmount} {currency} = {cur} {valueTo}</Text>
     </View>
   )
 }
@@ -504,10 +505,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     width: 100,
     height: 100,
-    backgroundColor: 'rgb(121, 181, 0)',
-    borderRadius: 20,
-    borderColor: 'black',
-    borderWidth: 1,
   },
   squareText: {
     color: 'white',
@@ -519,6 +516,7 @@ const styles = StyleSheet.create({
   wrap:{
     justifyContent: 'center',
     height: '100%',
+    
   },
   flexing:{
     flexDirection: 'row',
@@ -726,16 +724,37 @@ const styles = StyleSheet.create({
       marginVertical:'30%',
       justifyContent:'center',
       alignItems:'center',
+      width:350,
+      height:140,
     },
     date:{
       fontSize: 30,
-      fontFamily:'AvenirNext-Italic',
-      fontWeight: '200',
-      borderColor:'black',
-      borderWidth: 0.5,
+      fontFamily:'Georgia',
       padding:20,
+      color:'white',
+      textAlign:'center',
+    },
+    linearGradient: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 5,
+      height: '100%',
+      width: '100%',
+      borderRadius: 20,
+      borderColor: 'black',
+      borderWidth: 1.5,
+    },
+    bigGradient: {
+      height: '100%',
+      width: '100%',
+    },
+    otherGradient: {
+      height: '100%',
+      width: '100%',
       borderRadius:30,
-    }
+      borderColor:'black',
+      borderWidth: 3,
+    },
 });
 
 export default App;
